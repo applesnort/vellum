@@ -4,6 +4,10 @@
 
 No paid service. No account. No remote API. Files live in `.claude/designs/` inside your repo.
 
+![Vellum draft using PathSync tokens — FBO pickup card with primary and outline buttons](./docs/smoke-test.png)
+
+Above: a Vellum-generated draft for [PathSync](https://github.com/applesnort/) — neutral baseColor in dark mode, real shadcn Button class strings, real CSS-variable tokens. No React, no build step — just an `.html` file you can open in any browser.
+
 ## Why
 
 SuperDesign is great, but it's a paid service that runs your design iterations on a remote canvas. Vellum does the same workflow — branch, replace, iterate — but stays entirely local and reads your project's actual design tokens, `tailwind.config.ts`, and shadcn/ui components so generated drafts match your real app at ~95% fidelity.
