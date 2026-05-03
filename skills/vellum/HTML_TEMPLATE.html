@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+
+    <!-- Geist (matches PathSync). Swap if the project uses something else. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind v3 CDN (JIT in browser, supports arbitrary values like h-9 / grid-cols-12) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+    <!-- Lucide icons (used inline as <i data-lucide="name"></i>) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- ↓ Project Tailwind theme — auto-injected by /vellum init -->
+    <script data-vellum="config">
+      // {{TAILWIND_CONFIG}}
+      // Vellum will replace this comment block with the project's tailwind.config = {...}
+      // Example shape:
+      // tailwind.config = {
+      //   darkMode: 'class',
+      //   theme: {
+      //     extend: {
+      //       fontFamily: { geist: ['Geist', 'sans-serif'], 'geist-mono': ['Geist Mono', 'monospace'] },
+      //       colors: {
+      //         background: 'hsl(var(--background))',
+      //         foreground: 'hsl(var(--foreground))',
+      //         card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
+      //         primary: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
+      //         /* ...etc... */
+      //       },
+      //       borderRadius: { lg: 'var(--radius)', md: 'calc(var(--radius) - 2px)', sm: 'calc(var(--radius) - 4px)' }
+      //     }
+      //   }
+      // }
+    </script>
+
+    <!-- ↓ Project CSS variable tokens — auto-injected by /vellum init -->
+    <style data-vellum="tokens">
+      /* {{TOKENS_CSS}} */
+      /* Vellum will replace this comment with the project's :root and .dark blocks from globals.css */
+    </style>
+
+    <!-- Vellum baseline styles — minimal scaffolding for drafts -->
+    <style data-vellum="base">
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family:
+          "Geist",
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-feature-settings: "ss01", "cv11";
+      }
+      .font-geist-mono,
+      .font-mono,
+      code,
+      kbd {
+        font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      /* Vellum-only debug helper: outline elements when ?debug=1 in URL */
+      body[data-vellum-debug] *:not(svg, path) {
+        outline: 1px dashed rgba(255, 100, 100, 0.25);
+      }
+    </style>
+
+    <script>
+      // Toggle ?debug=1 in URL to outline every block — useful when alignment looks off
+      if (new URLSearchParams(location.search).get("debug") === "1") {
+        document.body?.setAttribute?.("data-vellum-debug", "");
+        document.addEventListener("DOMContentLoaded", () =>
+          document.body.setAttribute("data-vellum-debug", "")
+        );
+      }
+    </script>
+  </head>
+  <body class="dark bg-background text-foreground font-geist antialiased">
+    <!-- {{BODY}} -->
+    <!-- Vellum will replace this comment with the generated draft markup. -->
+
+    <!-- Initialize Lucide icons after DOM is ready -->
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        if (window.lucide) window.lucide.createIcons();
+      });
+    </script>
+  </body>
+</html>

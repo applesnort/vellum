@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "applesnort",
+  "owner": {
+    "name": "applesnort"
+  },
+  "description": "applesnort's Claude Code plugins.",
+  "plugins": [
+    {
+      "name": "vellum",
+      "source": "./",
+      "description": "Local design-iteration skill — self-hosted alternative to SuperDesign. Iterates static HTML/CSS mockups using your real Tailwind tokens and shadcn/ui class vocabulary.",
+      "version": "0.1.0",
+      "keywords": ["design", "ui", "mockup", "shadcn", "tailwind"]
+    }
+  ]
+}
