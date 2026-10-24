@@ -1,6 +1,6 @@
 # Vellum
 
-> Local design iteration for Claude Code. A self-hosted alternative to SuperDesign that generates static HTML/CSS mockups using your real Tailwind tokens and shadcn/ui class vocabulary.
+> Local design iteration for Claude Code. A self-hosted alternative to SuperDesign that generates static HTML/CSS mockups using your codebase's real design tokens and component vocabulary: Tailwind + shadcn/ui, Quasar + Vue, or a generic fallback for any other stack.
 
 No paid service. No account. No remote API. Files live in `.claude/designs/` inside your repo.
 
@@ -23,13 +23,13 @@ You stay in your editor. Drafts are git-trackable. Tokens never leave your machi
 
 ## First-time setup
 
-From any frontend project root with `tailwind.config.{ts,js}` and a shadcn `components.json`:
+From any frontend project root:
 
 ```
 /vellum init
 ```
 
-This scans `globals.css`, the Tailwind config, and ~10 shadcn primitives, and writes `.claude/designs/_context/` (tokens.css, context.md, per-component vocabularies). Re-run any time tokens change.
+`init` detects the stack profile (`tailwind-shadcn`, `tailwind-only`, `quasar-vue`, or `generic`), extracts tokens and component class vocabulary the way that stack expresses them, and writes `.claude/designs/_context/` (context.md, tokens.css, head.html, per-component vocabularies). Re-run any time tokens or the stack change.
 
 ## Workflow
 
@@ -45,7 +45,13 @@ This scans `globals.css`, the Tailwind config, and ~10 shadcn primitives, and wr
 /vellum iterate <chosen-draft-id> --mode replace -p "Tighten field widths via 12-col grid; cap email at max-w-sm; group passenger contact in one row."
 ```
 
-Drafts are self-contained `.html` files that load Tailwind via CDN, inline your project tokens, and use Lucide for icons. Open in any browser — no dev server needed.
+Drafts are self-contained `.html` files that load your stack's CSS via CDN and inline your project tokens. Open in any browser — no dev server needed.
+
+## Layout lint
+
+After every `draft` and `iterate`, Vellum runs `lint.mjs`. It renders the draft in Chromium at 1440px and 390px and measures the DOM for composition defects: horizontal scroll, stacked headings, section gaps that are not larger than field gaps, bordered boxes closer than 8px, too much helper text, and misaligned columns. FAIL findings are fixed before the draft is shown.
+
+The lint uses the `playwright` package from the repo you run it in. If the repo does not have it: `npm install --save-dev playwright && npx playwright install chromium`.
 
 ## Verbs
 
