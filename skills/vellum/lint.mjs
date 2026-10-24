@@ -66,17 +66,22 @@ async function settle(page) {
   const usesTailwindBrowser = await page.evaluate(() =>
     [...document.scripts].some(s => /@tailwindcss\/browser/.test(s.src)));
   if(usesTailwindBrowser) {
-    await page.waitForFunction(() => {
+    // the probe stays in the DOM while polling so Tailwind's
+    // MutationObserver can see it and generate `.hidden`
+    await page.evaluate(() => {
       const probe = document.createElement('div');
+      probe.id = 'vellum-lint-probe';
       probe.className = 'hidden';
       document.body.appendChild(probe);
-      const done = getComputedStyle(probe).display === 'none';
-      probe.remove();
-      return done;
-    }, null, {timeout: 15000}).catch(e => {
+    });
+    await page.waitForFunction(() => getComputedStyle(
+      document.getElementById('vellum-lint-probe')).display === 'none',
+    null, {timeout: 15000}).catch(e => {
       throw new Error(
         `Tailwind browser CDN did not apply styles within 15s: ${e.message}`);
     });
+    await page.evaluate(() =>
+      document.getElementById('vellum-lint-probe').remove());
   }
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => new Promise(r =>
