@@ -144,13 +144,17 @@ function measure() {
   }
 
   const aloneOnLine = el => {
-    const parent = el.parentElement;
-    if(!parent) {
-      return true;
-    }
     const r = rect(el);
-    return [...parent.children].filter(c => c !== el && visible(c))
-      .every(c => overlapY(rect(c), r) <= 1);
+    let node = el;
+    while(node.parentElement && node.parentElement !== document.body) {
+      const siblings = [...node.parentElement.children]
+        .filter(c => c !== node && visible(c));
+      if(siblings.length) {
+        return siblings.every(c => overlapY(rect(c), r) <= 1);
+      }
+      node = node.parentElement;
+    }
+    return true;
   };
   const isHeading = el => {
     if(el.matches(HEADING_SEL)) {
