@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Service requests — baseline table</title>
+
+    <!-- ↓ Stack-specific head (CDN CSS/JS, fonts, icons) — written once per repo by
+         /vellum init into _context/head.html, based on the detected stack profile.
+         Do not hand-edit this block in a draft; edit _context/head.html and re-run
+         /vellum init, or the next draft/iterate will overwrite your edit. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style type="text/tailwindcss">
+  @theme inline {
+    --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-warning: var(--warning);
+    --color-success: var(--success);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+  }
+  @layer base {
+    *, ::before, ::after { border-color: var(--color-border); }
+  }
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --warning: oklch(0.769 0.188 70.08);
+    --success: oklch(0.627 0.194 149.214);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+  }
+</style>
+
+    <!-- Vellum baseline styles — minimal, stack-agnostic scaffolding for drafts -->
+    <style data-vellum="base">
+      html,
+      body {
+        height: 100%;
+      }
+      /* Vellum-only debug helper: outline elements when ?debug=1 in URL */
+      body[data-vellum-debug] *:not(svg, path) {
+        outline: 1px dashed rgba(255, 100, 100, 0.25);
+      }
+    </style>
+
+    <script>
+      // Toggle ?debug=1 in URL to outline every block — useful when alignment looks off
+      if (new URLSearchParams(location.search).get("debug") === "1") {
+        document.body?.setAttribute?.("data-vellum-debug", "");
+        document.addEventListener("DOMContentLoaded", () =>
+          document.body.setAttribute("data-vellum-debug", "")
+        );
+      }
+    </script>
+  </head>
+  <body class="bg-background text-foreground font-sans antialiased">
+    <main class="mx-auto max-w-[1600px] px-6 py-8">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Service Requests</h1>
+      <p class="text-sm text-muted-foreground">Brooklyn · 40 requests</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-9 px-4 py-2 border bg-background shadow-xs hover:bg-accent"><i data-lucide="download" class="size-4"></i>Export</button>
+      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-9 px-4 py-2 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90"><i data-lucide="user-plus" class="size-4"></i>Assign</button>
+    </div>
+  </div>
+
+  <div class="mt-8 flex flex-wrap items-center justify-between gap-4">
+    <div class="bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]">
+      <button class="inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap bg-background text-foreground shadow-sm">All</button>
+      <button class="inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap">Open (19)</button>
+      <button class="inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap">In Progress (14)</button>
+      <button class="inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium whitespace-nowrap">Closed (7)</button>
+    </div>
+    <div class="relative w-full sm:w-72">
+      <i data-lucide="search" class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+      <input class="h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 pl-9 text-sm shadow-xs" placeholder="Search requests…" aria-label="Search requests">
+    </div>
+  </div>
+
+  <div class="mt-6 rounded-lg border">
+    <div class="relative w-full overflow-x-auto">
+      <table class="w-full caption-bottom text-sm">
+        <thead><tr class="border-b">
+          <th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground w-8"></th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">ID</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Created</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Agency</th>
+          <th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Complaint Type</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Descriptor</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Location Type</th>
+          <th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Street</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Status</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground">Resolution</th><th class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground w-8"></th>
+        </tr></thead>
+        <tbody>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70850739"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70850739</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:44 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Posted Parking Sign Violation</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">P P WEST</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that no criminal violation existed. The condition was corrected without the need to issue a summons or effect an arrest. If the problem persists, please contact 311 to create another complaint. If possible, provide contact information so responding officers may reach out to you for more details. If necessary, your complaint may be referred to your local precinct&#x27;s special operations units (Quality of Life, etc.). Thank you for your attention to this matter. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70850601"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70850601</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:43 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Residential</td>
+          <td class="p-2 align-middle whitespace-nowrap">Banging/Pounding</td>
+          <td class="p-2 align-middle whitespace-nowrap">Residential Building/House</td>
+          <td class="p-2 align-middle whitespace-nowrap">BEVERLEY ROAD</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70850740"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70850740</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:42 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Posted Parking Sign Violation</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">TENTH STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that no criminal violation existed. The condition was corrected without the need to issue a summons or effect an arrest. If the problem persists, please contact 311 to create another complaint. If possible, provide contact information so responding officers may reach out to you for more details. If necessary, your complaint may be referred to your local precinct&#x27;s special operations units (Quality of Life, etc.). Thank you for your attention to this matter. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70847724"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70847724</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:34 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Posted Parking Sign Violation</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">PROSPECT PARK WEST</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that no criminal violation existed. The condition was corrected without the need to issue a summons or effect an arrest. If the problem persists, please contact 311 to create another complaint. If possible, provide contact information so responding officers may reach out to you for more details. If necessary, your complaint may be referred to your local precinct&#x27;s special operations units (Quality of Life, etc.). Thank you for your attention to this matter. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70852239"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70852239</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:29 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DOHMH</td>
+          <td class="p-2 align-middle whitespace-nowrap">Smoking or Vaping</td>
+          <td class="p-2 align-middle whitespace-nowrap">Allowed in Smoke Free Area</td>
+          <td class="p-2 align-middle whitespace-nowrap">Residential Building</td>
+          <td class="p-2 align-middle whitespace-nowrap">WOODBINE STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The Department of Health and Mental Hygiene has sent official written notification to the Owner/Landlord warning them of potential violations and instructing them to correct the situation. If the situation persists 21 days after your initial complaint, please make a new complaint.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70853634"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70853634</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:15 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Abandoned Vehicle</td>
+          <td class="p-2 align-middle whitespace-nowrap">With License Plate</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">SCHROEDERS AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that police action was not necessary. If the problem persists, please contact 311 to create another complaint. If possible, provide contact information so responding officers may reach out to you for more details. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70849130"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70849130</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:05 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Posted Parking Sign Violation</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">EAST 18 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70856525"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70856525</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 01:00 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Commercial</td>
+          <td class="p-2 align-middle whitespace-nowrap">Loud Music/Party</td>
+          <td class="p-2 align-middle whitespace-nowrap">Store/Commercial</td>
+          <td class="p-2 align-middle whitespace-nowrap">63 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70850769"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70850769</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:59 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Commercial Overnight Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">UNION AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855307"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855307</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:51 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DCWP</td>
+          <td class="p-2 align-middle whitespace-nowrap">Consumer Complaint</td>
+          <td class="p-2 align-middle whitespace-nowrap">Tow Truck Company</td>
+          <td class="p-2 align-middle whitespace-nowrap">Business</td>
+          <td class="p-2 align-middle whitespace-nowrap">BROADWAY</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70847788"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70847788</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:48 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">Loud Music/Party</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">BEDFORD AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70853134"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70853134</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:33 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DSNY</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Dumping</td>
+          <td class="p-2 align-middle whitespace-nowrap">Removal Request</td>
+          <td class="p-2 align-middle whitespace-nowrap">Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">REMSEN AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855221"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855221</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:30 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Residential</td>
+          <td class="p-2 align-middle whitespace-nowrap">Loud Music/Party</td>
+          <td class="p-2 align-middle whitespace-nowrap">Residential Building/House</td>
+          <td class="p-2 align-middle whitespace-nowrap">GRAND STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70850280"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70850280</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:10 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DOT</td>
+          <td class="p-2 align-middle whitespace-nowrap">Traffic Signal Condition</td>
+          <td class="p-2 align-middle whitespace-nowrap">Controller</td>
+          <td class="p-2 align-middle whitespace-nowrap"></td>
+          <td class="p-2 align-middle whitespace-nowrap"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70851899"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70851899</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 23, 12:05 AM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DEP</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise</td>
+          <td class="p-2 align-middle whitespace-nowrap">Construction</td>
+          <td class="p-2 align-middle whitespace-nowrap">Unknown</td>
+          <td class="p-2 align-middle whitespace-nowrap">WASHINGTON STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70848784"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70848784</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:50 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DOT</td>
+          <td class="p-2 align-middle whitespace-nowrap">Traffic Signal Condition</td>
+          <td class="p-2 align-middle whitespace-nowrap">Veh Signal Head</td>
+          <td class="p-2 align-middle whitespace-nowrap"></td>
+          <td class="p-2 align-middle whitespace-nowrap"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70856576"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70856576</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:44 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Commercial</td>
+          <td class="p-2 align-middle whitespace-nowrap">Loud Music/Party</td>
+          <td class="p-2 align-middle whitespace-nowrap">Store/Commercial</td>
+          <td class="p-2 align-middle whitespace-nowrap">3 AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that no criminal violation existed. The condition was corrected without the need to issue a summons or effect an arrest. If the problem persists, please contact 311 to create another complaint. If possible, provide contact information so responding officers may reach out to you for more details. If necessary, your complaint may be referred to your local precinct&#x27;s special operations units (Quality of Life, etc.). Thank you for your attention to this matter. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70848336"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70848336</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:38 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Residential</td>
+          <td class="p-2 align-middle whitespace-nowrap">Loud Talking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Residential Building/House</td>
+          <td class="p-2 align-middle whitespace-nowrap">WEST 33 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70858644"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70858644</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:38 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">EAST   12 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855724"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855724</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:38 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">DOOR/WINDOW</td>
+          <td class="p-2 align-middle whitespace-nowrap">WINDOW PANE</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">ST JOHNS PLACE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70847619"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70847619</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:36 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Noise - Commercial</td>
+          <td class="p-2 align-middle whitespace-nowrap">Loud Music/Party</td>
+          <td class="p-2 align-middle whitespace-nowrap">Store/Commercial</td>
+          <td class="p-2 align-middle whitespace-nowrap">3 AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that no criminal violation existed. The condition was corrected without the need to issue a summons or effect an arrest. If the problem persists, please contact 311 to create another complaint. If possible, provide contact information so responding officers may reach out to you for more details. If necessary, your complaint may be referred to your local precinct&#x27;s special operations units (Quality of Life, etc.). Thank you for your attention to this matter. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70850619"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70850619</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:35 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Posted Parking Sign Violation</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">LENOX ROAD</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Closed</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The New York City Police Department responded to the complaint and their investigation determined that a violation of law occurred. Police issued a summons in response to the complaint. Thank you for attention to this matter. We count on New Yorkers like yourself to maintain a safe City, so please let us know if you see other conditions that require our attention.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70852427"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70852427</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:34 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">PLUMBING</td>
+          <td class="p-2 align-middle whitespace-nowrap">WATER SUPPLY</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">DECATUR STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70848136"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70848136</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:33 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">EAST   17 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">This complaint is a duplicate of a building-wide condition already reported by another tenant.  The original complaint is still open, and HPD may only need to confirm that the condition exists by inspecting one apartment.  If we cannot contact the tenant from the original complaint or get access to that apartment, HPD may attempt to contact the person who filed this complaint to verify the correction of the condition or may conduct an inspection of your unit. You can check HPDONLINE to see if a</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855508"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855508</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:33 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">4 AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70857290"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70857290</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:32 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">DOHMH</td>
+          <td class="p-2 align-middle whitespace-nowrap">Rodent</td>
+          <td class="p-2 align-middle whitespace-nowrap">Rat Sighting</td>
+          <td class="p-2 align-middle whitespace-nowrap">3+ Family Apt. Building</td>
+          <td class="p-2 align-middle whitespace-nowrap">SARATOGA AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70851162"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70851162</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:32 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">APARTMENT ONLY</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">ROCKAWAY PARKWAY</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70858033"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70858033</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:31 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Blocked Driveway</td>
+          <td class="p-2 align-middle whitespace-nowrap">No Access</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">24 AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855683"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855683</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:31 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">GENERAL</td>
+          <td class="p-2 align-middle whitespace-nowrap">VENTILATION SYSTEM</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">BROADWAY</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855022"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855022</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:31 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">NYPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">Illegal Parking</td>
+          <td class="p-2 align-middle whitespace-nowrap">Posted Parking Sign Violation</td>
+          <td class="p-2 align-middle whitespace-nowrap">Street/Sidewalk</td>
+          <td class="p-2 align-middle whitespace-nowrap">NOSTRAND AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">In Progress</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground"></td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855605"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855605</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:31 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">OCEAN PARKWAY</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70851043"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70851043</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:30 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">SULLIVAN PLACE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">This complaint is a duplicate of a building-wide condition already reported by another tenant.  The original complaint is still open, and HPD may only need to confirm that the condition exists by inspecting one apartment.  If we cannot contact the tenant from the original complaint or get access to that apartment, HPD may attempt to contact the person who filed this complaint to verify the correction of the condition or may conduct an inspection of your unit. You can check HPDONLINE to see if a</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70851029"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70851029</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:29 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">PAINT/PLASTER</td>
+          <td class="p-2 align-middle whitespace-nowrap">CEILING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">EAST   95 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70858437"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70858437</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:29 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">UNSANITARY CONDITION</td>
+          <td class="p-2 align-middle whitespace-nowrap">PESTS</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">EAST   95 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70852513"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70852513</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:29 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">CARROLL STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855602"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855602</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:28 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">PUTNAM AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">This complaint is a duplicate of a building-wide condition already reported by another tenant.  The original complaint is still open, and HPD may only need to confirm that the condition exists by inspecting one apartment.  If we cannot contact the tenant from the original complaint or get access to that apartment, HPD may attempt to contact the person who filed this complaint to verify the correction of the condition or may conduct an inspection of your unit. You can check HPDONLINE to see if a</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70852581"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70852581</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:28 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">ST MARKS AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">This complaint is a duplicate of a building-wide condition already reported by another tenant.  The original complaint is still open, and HPD may only need to confirm that the condition exists by inspecting one apartment.  If we cannot contact the tenant from the original complaint or get access to that apartment, HPD may attempt to contact the person who filed this complaint to verify the correction of the condition or may conduct an inspection of your unit. You can check HPDONLINE to see if a</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855519"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855519</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:26 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">NEW YORK AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">This complaint is a duplicate of a building-wide condition already reported by another tenant.  The original complaint is still open, and HPD may only need to confirm that the condition exists by inspecting one apartment.  If we cannot contact the tenant from the original complaint or get access to that apartment, HPD may attempt to contact the person who filed this complaint to verify the correction of the condition or may conduct an inspection of your unit. You can check HPDONLINE to see if a</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70858565"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70858565</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:25 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">NEPTUNE AVENUE</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        <tr class="border-b transition-colors hover:bg-muted/50">
+          <td class="p-2 align-middle whitespace-nowrap"><input type="checkbox" class="size-4 rounded border-input" aria-label="Select 70855599"></td>
+          <td class="p-2 align-middle whitespace-nowrap font-mono text-xs">70855599</td>
+          <td class="p-2 align-middle whitespace-nowrap">Oct 22, 11:25 PM</td>
+          <td class="p-2 align-middle whitespace-nowrap">HPD</td>
+          <td class="p-2 align-middle whitespace-nowrap">HEAT/HOT WATER</td>
+          <td class="p-2 align-middle whitespace-nowrap">ENTIRE BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">RESIDENTIAL BUILDING</td>
+          <td class="p-2 align-middle whitespace-nowrap">EAST   21 STREET</td>
+          <td class="p-2 align-middle whitespace-nowrap"><span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1">Open</span></td>
+          <td class="p-2 align-middle whitespace-nowrap max-w-56 truncate text-muted-foreground">The following complaint conditions are still open. HPD has already attempted to notify the property owner that the condition exists; the tenant should provide access for the owner to make the repair.  HPD may attempt to contact the tenant by phone to verify the correction of the condition or an HPD Inspector may attempt to conduct an inspection.</td>
+          <td class="p-2 align-middle whitespace-nowrap"><button class="inline-flex items-center justify-center rounded-md size-8 hover:bg-accent" aria-label="Actions"><i data-lucide="more-horizontal" class="size-4"></i></button></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+    <!-- ↓ Stack-specific body-end script (e.g. Lucide icon init for Tailwind/shadcn
+         drafts). Written by init into _context/head.html's paired body-script half;
+         empty for stacks that don't need one (e.g. Quasar, which uses inline SVG). -->
+    <script>
+  window.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) window.lucide.createIcons();
+  });
+</script>
+  </body>
+</html>

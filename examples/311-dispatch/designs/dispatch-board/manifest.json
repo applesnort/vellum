@@ -1,0 +1,52 @@
+{
+  "id": "dispatch-board",
+  "title": "311 dispatch board",
+  "createdAt": "2026-10-24T17:00:00Z",
+  "drafts": [
+    {
+      "id": "baseline-3f1c0a",
+      "title": "Service requests — baseline table",
+      "parent": null,
+      "prompt": "Brooklyn 311 service-request list for a borough desk: shadcn data table with every field, status tabs, search, bulk assign.",
+      "scenario": "typical + 15 missing resolutions + 2 missing streets + 700-char resolution",
+      "createdAt": "2026-10-24T17:05:00Z",
+      "critique": "critiques/baseline-3f1c0a.md"
+    },
+    {
+      "id": "baseline-3f1c0a-b1-8d24e7",
+      "title": "A · Triage queue grouped by severity",
+      "parent": "baseline-3f1c0a",
+      "prompt": "Replace the table with a queue: groups by severity (entire-building heat first), duplicates folded under one row, two-line list rows with wait time and status, closed requests behind a link.",
+      "scenario": "typical + 15 missing resolutions + 2 missing streets + 700-char resolution",
+      "hypothesis": "Grouping by severity makes the next request to act on the first row, without sorting or reading.",
+      "favors": "picking the next request; phone use, because the same list works at 390",
+      "sacrifices": "density (about 9 requests above the fold at 1440×900, against about 15 in B) and ad-hoc sorting or comparing by column",
+      "addresses": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "createdAt": "2026-10-24T17:40:00Z"
+    },
+    {
+      "id": "baseline-3f1c0a-b2-c51f90",
+      "title": "B · Focused table with detail rail",
+      "parent": "baseline-3f1c0a",
+      "prompt": "Keep a table for experts but cut it to six columns sorted by priority (P1–P3), wait time first, duplicates badged and sunk to the bottom, a Needs action default tab, and a fixed detail rail with the full agency note and actions. List rows below md.",
+      "scenario": "typical + 15 missing resolutions + 2 missing streets + 700-char resolution; the 700-char note is on a closed row, so the default view does not show it",
+      "hypothesis": "Experts keep scanning a table; showing the selected request's full note beside it removes the need to open rows.",
+      "favors": "high-volume scanning and comparing rows; acting without leaving the list",
+      "sacrifices": "384px of width for the rail; priority is a computed code (P1–P3) the operator must learn and trust; duplicates still take rows",
+      "addresses": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "createdAt": "2026-10-24T17:45:00Z"
+    }
+  ]
+}

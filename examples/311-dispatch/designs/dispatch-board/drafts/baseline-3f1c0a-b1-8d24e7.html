@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A · Triage queue grouped by severity</title>
+
+    <!-- ↓ Stack-specific head (CDN CSS/JS, fonts, icons) — written once per repo by
+         /vellum init into _context/head.html, based on the detected stack profile.
+         Do not hand-edit this block in a draft; edit _context/head.html and re-run
+         /vellum init, or the next draft/iterate will overwrite your edit. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style type="text/tailwindcss">
+  @theme inline {
+    --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-warning: var(--warning);
+    --color-success: var(--success);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+  }
+  @layer base {
+    *, ::before, ::after { border-color: var(--color-border); }
+  }
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --warning: oklch(0.769 0.188 70.08);
+    --success: oklch(0.627 0.194 149.214);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+  }
+</style>
+
+    <!-- Vellum baseline styles — minimal, stack-agnostic scaffolding for drafts -->
+    <style data-vellum="base">
+      html,
+      body {
+        height: 100%;
+      }
+      /* Vellum-only debug helper: outline elements when ?debug=1 in URL */
+      body[data-vellum-debug] *:not(svg, path) {
+        outline: 1px dashed rgba(255, 100, 100, 0.25);
+      }
+    </style>
+
+    <script>
+      // Toggle ?debug=1 in URL to outline every block — useful when alignment looks off
+      if (new URLSearchParams(location.search).get("debug") === "1") {
+        document.body?.setAttribute?.("data-vellum-debug", "");
+        document.addEventListener("DOMContentLoaded", () =>
+          document.body.setAttribute("data-vellum-debug", "")
+        );
+      }
+    </script>
+  </head>
+  <body class="bg-background text-foreground font-sans antialiased">
+    <main class="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Brooklyn queue</h1>
+      <p class="text-sm text-muted-foreground">28 need action · 5 duplicates · oldest waiting 2h 35m</p>
+    </div>
+    <div class="relative w-full sm:w-64">
+      <i data-lucide="search" class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+      <input class="h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 pl-9 text-sm shadow-xs" placeholder="Search street, type, ID" aria-label="Search requests">
+    </div>
+  </div>
+  <section class="mt-10">
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="text-sm font-semibold">Entire building — no heat <span class="font-normal text-muted-foreground">6</span></h2>
+      
+    </div>
+    <ul class="mt-3 divide-y rounded-lg border">
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Neptune Avenue</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 35m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>East   21 Street</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 35m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Carroll Street</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 31m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Ocean Parkway</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 29m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>4 Avenue</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 27m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>East   12 Street</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 22m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <details class="mt-3 rounded-lg border bg-muted/40">
+    <summary class="flex cursor-pointer items-center gap-2 px-4 py-3 text-sm"><i data-lucide="copy" class="size-4 text-muted-foreground"></i>5 duplicates of building-wide conditions already reported <span class="ml-auto text-muted-foreground">Show</span></summary>
+    <ul class="divide-y border-t">
+        <li class="flex justify-between gap-3 px-4 py-2 text-sm text-muted-foreground"><span>East   17 Street</span><span class="tabular-nums">2h 27m</span></li>
+        <li class="flex justify-between gap-3 px-4 py-2 text-sm text-muted-foreground"><span>Sullivan Place</span><span class="tabular-nums">2h 30m</span></li>
+        <li class="flex justify-between gap-3 px-4 py-2 text-sm text-muted-foreground"><span>Putnam Avenue</span><span class="tabular-nums">2h 32m</span></li>
+        <li class="flex justify-between gap-3 px-4 py-2 text-sm text-muted-foreground"><span>St Marks Avenue</span><span class="tabular-nums">2h 32m</span></li>
+        <li class="flex justify-between gap-3 px-4 py-2 text-sm text-muted-foreground"><span>New York Avenue</span><span class="tabular-nums">2h 34m</span></li>
+    </ul>
+  </details>
+  <section class="mt-10">
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="text-sm font-semibold">Open <span class="font-normal text-muted-foreground">8</span></h2>
+      
+    </div>
+    <ul class="mt-3 divide-y rounded-lg border">
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Paint/Plaster</span><span class="text-muted-foreground">Ceiling</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>East   95 Street</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 31m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Unsanitary Condition</span><span class="text-muted-foreground">Pests</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>East   95 Street</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 31m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">General</span><span class="text-muted-foreground">Ventilation System</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Broadway</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 29m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Heat/Hot Water</span><span class="text-muted-foreground">Apartment Only</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Rockaway Parkway</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 28m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Plumbing</span><span class="text-muted-foreground">Water Supply</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Decatur Street</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 26m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Door/Window</span><span class="text-muted-foreground">Window Pane</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>St Johns Place</span><span>HPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 22m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Traffic Signal Condition</span><span class="text-muted-foreground">Veh Signal Head</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span><span class="italic text-muted-foreground">No street given</span></span><span>DOT</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 10m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Traffic Signal Condition</span><span class="text-muted-foreground">Controller</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span><span class="italic text-muted-foreground">No street given</span></span><span>DOT</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 50m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1 border-transparent bg-warning/15 text-foreground"><i data-lucide="circle-alert" class="size-3 text-warning"></i>Open</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="mt-10">
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="text-sm font-semibold">In progress <span class="font-normal text-muted-foreground">14</span></h2>
+      
+    </div>
+    <ul class="mt-3 divide-y rounded-lg border">
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Blocked Driveway</span><span class="text-muted-foreground">No Access</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>24 Avenue</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 29m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Illegal Parking</span><span class="text-muted-foreground">Posted Parking Sign Violation</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Nostrand Avenue</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 29m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Rodent</span><span class="text-muted-foreground">Rat Sighting</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Saratoga Avenue</span><span>DOHMH</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 28m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Noise - Residential</span><span class="text-muted-foreground">Loud Talking</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>West 33 Street</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">2h 22m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Noise</span><span class="text-muted-foreground">Construction</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Washington Street</span><span>DEP</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 55m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Noise - Residential</span><span class="text-muted-foreground">Loud Music/Party</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Grand Street</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 30m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Illegal Dumping</span><span class="text-muted-foreground">Removal Request</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Remsen Avenue</span><span>DSNY</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 27m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Noise - Street/Sidewalk</span><span class="text-muted-foreground">Loud Music/Party</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Bedford Avenue</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 12m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Consumer Complaint</span><span class="text-muted-foreground">Tow Truck Company</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Broadway</span><span>DCWP</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 09m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Illegal Parking</span><span class="text-muted-foreground">Commercial Overnight Parking</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Union Avenue</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 01m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Noise - Commercial</span><span class="text-muted-foreground">Loud Music/Party</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>63 Street</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">1h 00m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Illegal Parking</span><span class="text-muted-foreground">Posted Parking Sign Violation</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>East 18 Street</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">55m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Smoking or Vaping</span><span class="text-muted-foreground">Allowed in Smoke Free Area</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Woodbine Street</span><span>DOHMH</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">31m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+      <li class="flex items-start gap-3 px-4 py-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="font-medium">Noise - Residential</span><span class="text-muted-foreground">Banging/Pounding</span></div>
+          <div class="mt-1 flex flex-wrap gap-x-3 text-sm text-muted-foreground"><span>Beverley Road</span><span>NYPD</span></div>
+        </div>
+        <div class="flex shrink-0 flex-col items-end gap-1.5">
+          <span class="text-sm font-medium tabular-nums">17m</span>
+          <span class="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap gap-1"><span class="size-1.5 rounded-full bg-success"></span>In progress</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <p class="mt-10 text-sm text-muted-foreground"><a href="#" class="underline underline-offset-4">7 closed in the last 3 hours</a></p>
+</main>
+
+    <!-- ↓ Stack-specific body-end script (e.g. Lucide icon init for Tailwind/shadcn
+         drafts). Written by init into _context/head.html's paired body-script half;
+         empty for stacks that don't need one (e.g. Quasar, which uses inline SVG). -->
+    <script>
+  window.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) window.lucide.createIcons();
+  });
+</script>
+  </body>
+</html>

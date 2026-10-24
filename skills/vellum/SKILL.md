@@ -1,7 +1,7 @@
 ---
 name: vellum
 description: >
-  Local design-iteration skill — a self-hosted alternative to SuperDesign. Generates static HTML/CSS mockups using YOUR codebase's real design tokens and component vocabulary, whatever frontend stack it's built on (Tailwind+shadcn, Quasar+Vue, or a generic fallback for anything else). No paid service, no account, no remote API. Files live in `.claude/designs/` in the repo. Verbs: init, create, draft, iterate (replace|branch), open, list. Invoke with `/vellum <verb> <args>` or call directly when the user asks to mock up, sketch, prototype, or iterate on UI.
+  Local design-iteration skill — a self-hosted alternative to SuperDesign. Generates static HTML/CSS mockups using YOUR codebase's real design tokens and component vocabulary, whatever frontend stack it's built on (Tailwind+shadcn, Quasar+Vue, or a generic fallback for anything else). No paid service, no account, no remote API. Files live in `.claude/designs/` in the repo. Verbs: init, create, draft, iterate (replace|branch), critique, open, list. Invoke with `/vellum <verb> <args>` or call directly when the user asks to mock up, sketch, prototype, iterate on, or critique UI.
 ---
 
 # Vellum
@@ -21,9 +21,14 @@ Vellum is stack-aware, not stack-specific. `init` detects which of a small set o
     tailwind-config.js   # ONLY present for the tailwind-shadcn/tailwind-only profiles
     components/          # one .md per real component sampled (profile-appropriate)
   <project-slug>/
-    manifest.json      # { id, title, drafts: [{ id, title, parent, prompt, createdAt }] }
+    manifest.json      # { id, title, drafts: [{ id, title, parent, prompt, createdAt, ... }] }
+    brief.md           # six-line design brief (written by the first critique)
     drafts/
       <draft-id>.html  # one self-contained file per draft
+    critiques/
+      <draft-id>.md    # one critique per draft (written by critique)
+    shots/
+      <draft-id>-<width>.png  # screenshots (written by lint --shots)
 ```
 
 Skill assets:
@@ -31,6 +36,7 @@ Skill assets:
 - `~/.claude/skills/vellum/HTML_TEMPLATE.html` — stack-neutral boilerplate scaffold for new drafts
 - `~/.claude/skills/vellum/INIT.md` — detailed init procedure, including all stack profiles
 - `~/.claude/skills/vellum/lint.mjs` — layout check run after every `draft` and `iterate` (see Layout lint)
+- `~/.claude/skills/vellum/CRITIQUE.md` — principles, evidence tiers and finding format for `critique`
 
 ## Verb dispatch
 
@@ -85,8 +91,9 @@ Optional args:
 9. Run the layout lint (see Layout lint) and fix every FAIL before you continue.
 10. Append to manifest:
    ```json
-   { "id": "<draft-id>", "title": "<title>", "parent": null, "prompt": "<prompt>", "createdAt": "<ISO>" }
+   { "id": "<draft-id>", "title": "<title>", "parent": null, "prompt": "<prompt>", "scenario": "<data condition>", "createdAt": "<ISO>" }
    ```
+   `scenario` names the data the draft shows, in a few words: `typical`, `max density`, `missing fields`, `long text`, `large collection`, or a mix (`typical + 2 long resolutions`). If `brief.md` exists, use its data conditions. Fill the draft with realistic data for that condition — real values from the project's schema or fixtures when they exist — never a tidy three-row sample.
 11. Print: draft ID, file path, the lint result, and the `open` command they can run next.
 
 ### Verb: `iterate <draft-id> --mode <replace|branch> -p "prompt" [-p "prompt2" ...]`
@@ -110,9 +117,55 @@ Required args: `<draft-id>`, `--mode` (replace or branch), one or more `-p` prom
   - Copy the existing draft as a starting point.
   - Apply the prompt as a transformation.
   - Write to a new file.
-  - Add a manifest entry with `parent: <draft-id>` and the prompt.
+  - Add a manifest entry with `parent: <draft-id>`, the prompt, the parent's `scenario` (keep the same data so siblings compare fairly), and three fields:
+    ```json
+    { "hypothesis": "<the one structural bet this draft makes>", "favors": "<task or context it helps>", "sacrifices": "<what gets worse>" }
+    ```
+    If `critiques/<parent-id>.md` exists, add `"addresses": [<finding numbers>]`.
+- Siblings must differ in structure — layout, grouping, hierarchy, disclosure or interaction — not only in colour, type or spacing. If the user asks for cosmetic-only branches, make them and write `"hypothesis": "visual only"`.
 - Run the layout lint on each new file and fix every FAIL before you show the drafts.
-- Print all new draft IDs, their lint results, and their open commands.
+- Print all new draft IDs, their lint results, their hypotheses, and their open commands.
+
+### Verb: `critique <draft-id> [--no-blind] [--task "..."]`
+
+Expert inspection of one draft. It produces at most five ranked findings, each tied to a principle and to evidence. It is not user research: every finding is a hypothesis until users confirm it.
+
+1. Find the draft and its project. Read `~/.claude/skills/vellum/CRITIQUE.md` in full.
+2. **Brief.** If `<project>/brief.md` does not exist, write it, inferred from the draft, the manifest prompts and `context.md`:
+   ```markdown
+   - **User:** <role, expertise, how often they use this screen>
+   - **Primary task:** <the one task this screen exists for>
+   - **Decisions:** <what the user must decide or compare>
+   - **Data conditions:** <typical volume + the stress cases to test: missing fields, long text, large collections, exceptional states>
+   - **Viewports:** <e.g. 1440 desk, 390 phone>
+   - **Known pain points:** <from the prompts, or "none stated">
+   ```
+   Ask the user only if you cannot infer the primary task. `--task` overrides the primary task for this run only.
+3. **Evidence.** Run `node ~/.claude/skills/vellum/lint.mjs <draft> --shots <project>/shots` at the brief's viewports. Look at every screenshot. Lint exit 2 means you have no screenshots: say so, and tag nothing as `observed` from a screenshot.
+4. **Blind prediction** (skip with `--no-blind`). Before you show any finding, ask the user: "What are the top 3 problems you see in this draft?" Wait for the answer. Do not hint.
+5. **Inspect.** Do a heuristic evaluation and a cognitive walkthrough of the primary task (both in CRITIQUE.md). Check the draft against the brief's data conditions: if it shows only tidy data, that is a finding.
+6. **Write `<project>/critiques/<draft-id>.md`:**
+   ```markdown
+   # Critique: <draft title>
+   Draft: drafts/<draft-id>.html · Brief: brief.md · Lint: <PASS | n fail, n warn> · Shots: <files>
+
+   ## 1. [high] <element> — <problem in a few words>
+   - **Problem:** <what is wrong, and which task it affects>
+   - **Principle:** <name> `<source tier>`
+   - **Fix:** <concrete change to this draft>
+   - **Evidence:** `<observed | inferred | needs users>` — <lint rule + width, or shot file + element, or what would settle it>
+
+   ## Prediction vs. critique
+   - **Both found:** …
+   - **Critique only:** … (why it is easy to miss)
+   - **You only:** … (valid, but below the top 5 / not a usability issue / a miss by this critique)
+
+   ## Open questions for users
+   - <each `needs users` finding as a question a test could answer>
+   ```
+   Omit "Prediction vs. critique" with `--no-blind`. Five findings at most; fewer is fine.
+7. Add `"critique": "critiques/<draft-id>.md"` to the draft's manifest entry.
+8. Print the critique path, the finding titles, and the blind comparison. Suggest a `branch` command whose prompts each test a different fix for the top findings.
 
 ### Verb: `open <draft-id>`
 
@@ -163,7 +216,7 @@ When generating or iterating draft HTML, you MUST:
 
 ## Layout lint
 
-After every `draft` and `iterate`, run `node ~/.claude/skills/vellum/lint.mjs <file>` from the repo root. It opens the draft in Chromium through the repo's own `playwright` package at 1440px and 390px (`--width 1440,390` to change), waits for fonts and the Tailwind browser CDN, and measures the rendered DOM. Exit 0 = no FAIL, 1 = one or more FAIL, 2 = the check could not run (no `playwright` in the repo's `node_modules`, no Chromium, or the page did not load). Fix every FAIL before you show the draft. Tell the user about each WARN. An exit 2 is not a pass: say that the lint did not run and why.
+After every `draft` and `iterate`, run `node ~/.claude/skills/vellum/lint.mjs <file>` from the repo root. It opens the draft in Chromium through the repo's own `playwright` package at 1440px and 390px (`--width 1440,390` to change; `--shots <dir>` also saves a full-page PNG per width), waits for fonts and the Tailwind browser CDN, and measures the rendered DOM. Exit 0 = no FAIL, 1 = one or more FAIL, 2 = the check could not run (no `playwright` in the repo's `node_modules`, no Chromium, or the page did not load). Fix every FAIL before you show the draft. Tell the user about each WARN. An exit 2 is not a pass: say that the lint did not run and why.
 
 Rules (the output prints each rule with its heuristic, the elements, and the measured px):
 
@@ -188,6 +241,7 @@ The lint measures the default state only. Hidden tabs and panels are not checked
 ## Phase 2 — out of scope for MVP
 
 These verbs are NOT implemented in the MVP. If a user asks for them, explain they're future work:
+- `decide <project>` — compare sibling drafts against the brief and write a decision record (`DECISION.md`: problem, alternatives, choice, tradeoffs accepted, what to validate with users)
 - `promote <draft-id>` — convert HTML draft to a real component file (React/Vue) using the project's actual component imports
 - `serve` — start a local HTTP server to preview drafts in a gallery
 - `flow <draft-id> --pages "..."` — multi-page flows (SuperDesign's `execute-flow-pages`)
