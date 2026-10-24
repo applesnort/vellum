@@ -61,9 +61,30 @@ The lint uses the `playwright` package from the repo you run it in. If the repo 
 | `create <name>` | New project folder under `.claude/designs/<slug>/`. |
 | `draft <project> --title "X" -p "..."` | Generate a baseline draft from a prompt. |
 | `iterate <draft-id> --mode replace -p "..."` | Refine in place. Updates same file. |
-| `iterate <draft-id> --mode branch -p "..." -p "..."` | Spawn N sibling drafts from one parent. |
+| `iterate <draft-id> --mode branch -p "..." -p "..."` | Spawn N sibling drafts from one parent. Each records its `hypothesis`, what it `favors`, and what it `sacrifices`. |
+| `critique <draft-id> [--no-blind] [--task "..."]` | Expert inspection: at most five ranked findings, each tied to a principle and to evidence. |
 | `open <draft-id>` | Open the HTML in your default browser. |
 | `list [project]` | Show project tree of drafts. |
+
+## Critique
+
+`/vellum critique <draft-id>` inspects a draft the way a usability expert would, and writes `critiques/<draft-id>.md`:
+
+1. It writes a six-line `brief.md` for the project (user, primary task, decisions, data conditions, viewports, pain points), inferred from the draft and its prompts. It asks only if it cannot infer the primary task.
+2. It runs the layout lint with screenshots at the brief's viewports.
+3. **Blind step:** before it shows anything, it asks for *your* top 3 problems. At the end it compares your list with its own: both found, critique only, you only. Skip this with `--no-blind`. It is the part that trains your eye.
+4. It runs a heuristic evaluation and a cognitive walkthrough of the primary task, and reports at most five findings. Each finding names the element, the problem and the task it hurts, the principle (tagged `standard`, `empirical`, `practitioner` or `hypothesis`), a concrete fix, and its evidence: `observed` (a lint rule or screenshot shows it), `inferred`, or `needs users`.
+
+The principles and their sources are in `skills/vellum/CRITIQUE.md`. The critique is expert inspection: it produces hypotheses, not user evidence. Findings tagged `needs users` become the questions for a first-click or task test.
+
+Branch from the critique, so each alternative tests a different fix:
+
+```
+/vellum critique baseline-3f1c0a
+/vellum iterate baseline-3f1c0a --mode branch -p "Triage queue grouped by severity" -p "Six-column table with a detail rail"
+```
+
+See [`examples/311-dispatch/`](./examples/311-dispatch/) for a full run on real NYC 311 data.
 
 ## What Vellum is NOT (yet)
 
@@ -87,6 +108,7 @@ The intelligence is in the **`init` extraction**: it grabs your `:root` and `.da
 ## Roadmap
 
 - [ ] `promote <draft-id>` — convert locked HTML draft into a React component file with proper shadcn imports and `cn()` usage
+- [ ] `decide <project>` — compare sibling drafts against the brief and write a decision record
 - [ ] `serve` — local HTTP gallery for flipping through drafts side-by-side
 - [ ] Multi-page flows
 - [ ] Storybook story export
