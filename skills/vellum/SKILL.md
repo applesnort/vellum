@@ -1,21 +1,25 @@
 ---
 name: vellum
 description: >
-  Local design-iteration skill — a self-hosted alternative to SuperDesign. Generates static HTML/CSS mockups using YOUR codebase's design tokens, Tailwind config, and shadcn/ui class vocabulary. No paid service, no account, no remote API. Files live in `.claude/designs/` in the repo. Verbs: init, create, draft, iterate (replace|branch), open, list. Invoke with `/vellum <verb> <args>` or call directly when the user asks to mock up, sketch, prototype, or iterate on UI.
+  Local design-iteration skill — a self-hosted alternative to SuperDesign. Generates static HTML/CSS mockups using YOUR codebase's real design tokens and component vocabulary, whatever frontend stack it's built on (Tailwind+shadcn, Quasar+Vue, or a generic fallback for anything else). No paid service, no account, no remote API. Files live in `.claude/designs/` in the repo. Verbs: init, create, draft, iterate (replace|branch), open, list. Invoke with `/vellum <verb> <args>` or call directly when the user asks to mock up, sketch, prototype, or iterate on UI.
 ---
 
 # Vellum
 
-Vellum mirrors the SuperDesign workflow but generates locally. It produces self-contained HTML files that load Tailwind via CDN, inject your project's CSS variable tokens, and use shadcn/ui class vocabulary extracted from your real components — so generated mocks visually match your real app at ~95% fidelity.
+Vellum mirrors the SuperDesign workflow but generates locally. It produces self-contained HTML files that load the project's real CSS framework/tokens and use real component class vocabulary extracted from the actual codebase — so generated mocks visually match the real app, not a generic Tailwind/shadcn default that happens to be wrong for this project.
+
+Vellum is stack-aware, not stack-specific. `init` detects which of a small set of **profiles** the repo actually uses (Tailwind+shadcn, Quasar+Vue, or a generic fallback for anything else) and extracts tokens/vocabulary the way that stack actually expresses them. Everything downstream (`draft`, `iterate`) is profile-agnostic — it just reads whatever `init` wrote.
 
 ## Storage layout
 
 ```
 <repo>/.claude/designs/
   _context/
-    context.md         # design tokens + shadcn class vocabulary (written by init)
-    tokens.css         # :root and .dark CSS variable blocks (written by init)
-    tailwind-config.js # extracted Tailwind theme.extend block (written by init)
+    context.md          # design tokens + component vocabulary + detected stack (written by init)
+    tokens.css           # design tokens in whatever form the stack uses (written by init)
+    head.html             # stack-specific <head>/body-script boilerplate (written by init)
+    tailwind-config.js   # ONLY present for the tailwind-shadcn/tailwind-only profiles
+    components/          # one .md per real component sampled (profile-appropriate)
   <project-slug>/
     manifest.json      # { id, title, drafts: [{ id, title, parent, prompt, createdAt }] }
     drafts/
@@ -23,9 +27,10 @@ Vellum mirrors the SuperDesign workflow but generates locally. It produces self-
 ```
 
 Skill assets:
-- `~/.claude/skills/vellum/SKILL.md` — this file
-- `~/.claude/skills/vellum/HTML_TEMPLATE.html` — boilerplate scaffold for new drafts
-- `~/.claude/skills/vellum/INIT.md` — detailed init procedure
+- `~/.claude/skills/vellum/SKILL.md` — this file (verb dispatch)
+- `~/.claude/skills/vellum/HTML_TEMPLATE.html` — stack-neutral boilerplate scaffold for new drafts
+- `~/.claude/skills/vellum/INIT.md` — detailed init procedure, including all stack profiles
+- `~/.claude/skills/vellum/lint.mjs` — layout check run after every `draft` and `iterate` (see Layout lint)
 
 ## Verb dispatch
 
@@ -35,77 +40,14 @@ If no verb is given, list available verbs and short usage.
 
 ### Verb: `init`
 
-**Run once per repo. Idempotent — re-run if tokens or shadcn components change.**
+**Run once per repo. Idempotent — re-run if tokens/components change, or if the project's frontend stack changes.**
 
-1. Confirm the working directory is a frontend repo: check for `tailwind.config.ts` OR `tailwind.config.js`, AND `components.json` (shadcn registry). If neither exists, abort with a message asking the user to run vellum from a frontend project root.
+Follow `INIT.md`'s full procedure. Summary:
 
-2. Read these files:
-   - `app/globals.css` (or `src/globals.css` / `styles/globals.css` — find via search)
-   - `tailwind.config.ts` (or `.js`)
-   - `components.json`
-   - A sampling of `app/components/ui/*.tsx` — read these specific files if present (in priority order; skip any that don't exist):
-     - `button.tsx`
-     - `input.tsx`
-     - `switch.tsx`
-     - `tabs.tsx`
-     - `card.tsx`
-     - `badge.tsx` or `badge.jsx`
-     - `dialog.tsx`
-     - `select.tsx`
-     - `textarea.tsx`
-     - `label.tsx`
-
-3. Extract from `globals.css`:
-   - The `:root { ... }` block (light tokens)
-   - The `.dark { ... }` block (dark tokens)
-   - Any custom `@keyframes` and utility classes that extend Tailwind (animations like `pulse-blue`, `bg-dotted`, etc.)
-
-4. Extract from `tailwind.config.ts`:
-   - `theme.extend.colors` mapping
-   - `theme.extend.fontFamily`
-   - `theme.extend.borderRadius`
-   - Any other extend keys
-   - The `darkMode` setting
-
-5. Extract from each shadcn component you read:
-   - The default variant's full className string (or the cva config if it uses cva)
-   - Each variant's className overrides
-   - Note any data-state styles (e.g. Switch's `data-[state=checked]:bg-primary`)
-
-6. Write `<repo>/.claude/designs/_context/tokens.css`:
-   ```css
-   /* Auto-extracted from app/globals.css. Re-run /vellum init to refresh. */
-   @layer base {
-     :root { /* ...all light vars... */ }
-     .dark { /* ...all dark vars... */ }
-   }
-   /* Plus any custom @keyframes / utility classes */
-   ```
-
-7. Write `<repo>/.claude/designs/_context/tailwind-config.js`:
-   ```js
-   // Auto-extracted Tailwind theme. Used inline by HTML drafts via cdn.tailwindcss.com.
-   tailwind.config = { darkMode: 'class', theme: { extend: { /* ...colors, fontFamily, borderRadius... */ } } }
-   ```
-
-8. Write `<repo>/.claude/designs/_context/context.md`:
-   - Header: project name (from package.json), shadcn baseColor (from components.json), darkMode setting
-   - Section: **Design tokens** — list every CSS variable with its dark and light value, organized by purpose (background, foreground, primary, etc.)
-   - Section: **Tailwind theme** — colors mapping, font families, border radius
-   - Section: **Component vocabulary** — for each shadcn component read, write a 2-4 line entry with its canonical className. Example:
-     ```
-     ### Button
-     Base: inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors disabled:opacity-50
-     Default variant: bg-primary text-primary-foreground hover:bg-primary/90
-     Outline variant: border border-input bg-background hover:bg-accent
-     Ghost variant: hover:bg-accent hover:text-accent-foreground
-     Sizes: h-10 px-4 py-2 (default), h-9 px-3 (sm), h-11 px-8 (lg), h-10 w-10 (icon)
-     ```
-   - Section: **Conventions** — note `cn()` from `@/lib/utils`, dark mode is class-based on `<html>` or `<body>`, font is Geist by default (or whatever the project uses), default body classes `bg-background text-foreground`.
-
-9. Print a summary to the user: number of components read, number of CSS variables extracted, path to context.md.
-
-If `INIT.md` exists in the skill directory, follow its more detailed procedure instead.
+1. Detect the stack profile (`quasar-vue`, `tailwind-shadcn`, `tailwind-only`, or `generic` — see INIT.md Step 1). **Never abort just because the stack doesn't match a named profile** — the `generic` fallback exists precisely so vellum works on any repo. Only abort if the working directory isn't a frontend project at all (no `package.json`, no component files of any kind).
+2. Run that profile's extraction procedure (INIT.md has one section per profile) to produce `tokens.css`, `head.html`, `tailwind-config.js` (tailwind profiles only), and `components/*.md`.
+3. Write `context.md` aggregating all of it, with a `**Stack:**` header line naming the detected profile — every later `draft`/`iterate` call reads this first.
+4. Print a summary: detected profile + what triggered it, tokens found (or "stock defaults used" / "none found"), components sampled, output path.
 
 ### Verb: `create <project-name>`
 
@@ -130,21 +72,22 @@ Optional args:
 
 1. Verify project exists: `<repo>/.claude/designs/<project-slug>/manifest.json`.
 2. Generate draft ID: `<short-slug>-<6-char-hash>` from the title.
-3. Read `<repo>/.claude/designs/_context/context.md` and `tokens.css`.
+3. Read `<repo>/.claude/designs/_context/context.md` — note the `**Stack:**` line.
 4. Read `~/.claude/skills/vellum/HTML_TEMPLATE.html`.
-5. Read any `--context-file` paths.
-6. Generate the draft HTML by:
+5. Read `<repo>/.claude/designs/_context/head.html` and split it at the `===VELLUM-BODY-SCRIPT-SPLIT===` marker: everything above → `{{HEAD_EXTRA}}`, everything below → `{{BODY_SCRIPT_EXTRA}}`.
+6. Read any `--context-file` paths.
+7. Generate the draft HTML by:
    - Starting from `HTML_TEMPLATE.html`
-   - Filling the `<title>` with `<title>`
-   - Inlining the contents of `_context/tokens.css` into the `<style data-vellum="tokens">` block
-   - Inlining the contents of `_context/tailwind-config.js` into the `<script data-vellum="config">` block
-   - Generating the body content from the user's prompt, using ONLY class patterns from `context.md`. Do NOT invent new component vocabularies.
-7. Write to `<repo>/.claude/designs/<project-slug>/drafts/<draft-id>.html`.
-8. Append to manifest:
+   - Filling `{{TITLE}}`, `{{HTML_ATTRS}}`, `{{BODY_CLASS}}` per the profile's documented values (see INIT.md's per-profile "HTML_ATTRS"/"BODY_CLASS" lines)
+   - Splicing in `{{HEAD_EXTRA}}` / `{{BODY_SCRIPT_EXTRA}}` from `head.html`
+   - Generating the body content from the user's prompt, using ONLY class/prop patterns from `context.md`'s component vocabulary section. Do NOT invent new component vocabularies, and do NOT default to Tailwind/shadcn conventions if `context.md` says the stack is something else.
+8. Write to `<repo>/.claude/designs/<project-slug>/drafts/<draft-id>.html`.
+9. Run the layout lint (see Layout lint) and fix every FAIL before you continue.
+10. Append to manifest:
    ```json
    { "id": "<draft-id>", "title": "<title>", "parent": null, "prompt": "<prompt>", "createdAt": "<ISO>" }
    ```
-9. Print: draft ID, file path, and the `open` command they can run next.
+11. Print: draft ID, file path, the lint result, and the `open` command they can run next.
 
 ### Verb: `iterate <draft-id> --mode <replace|branch> -p "prompt" [-p "prompt2" ...]`
 
@@ -153,11 +96,12 @@ Required args: `<draft-id>`, `--mode` (replace or branch), one or more `-p` prom
 #### Mode: `replace`
 - Single `-p` prompt expected.
 - Read existing draft HTML.
-- Read `_context/context.md`.
-- Apply the prompt as a refinement (e.g., "swap rows 2 and 3", "increase row gap to 1.5rem", "convert this section to a tab group").
+- Read `_context/context.md` (for the stack/vocabulary, not to re-splice head.html — the existing draft's head is presumably still correct unless the prompt specifically asks to change stacks, which shouldn't happen mid-project).
+- Apply the prompt as a refinement (e.g., "swap rows 2 and 3", "increase row gap", "convert this section to a tab group", "remove duplicated labels", "add more spacing").
 - Overwrite the same file at the same path.
 - Update the manifest entry's `prompt` field by appending the new prompt as a new array element under `iterations` (don't lose history).
 - Keep the same `<draft-id>`.
+- Run the layout lint on the file and fix every FAIL before you show the draft.
 
 #### Mode: `branch`
 - One or more `-p` prompts. Each prompt produces ONE new sibling draft.
@@ -167,7 +111,8 @@ Required args: `<draft-id>`, `--mode` (replace or branch), one or more `-p` prom
   - Apply the prompt as a transformation.
   - Write to a new file.
   - Add a manifest entry with `parent: <draft-id>` and the prompt.
-- Print all new draft IDs and their open commands.
+- Run the layout lint on each new file and fix every FAIL before you show the drafts.
+- Print all new draft IDs, their lint results, and their open commands.
 
 ### Verb: `open <draft-id>`
 
@@ -196,45 +141,59 @@ my-modal-redesign (3 drafts)
 
 When generating or iterating draft HTML, you MUST:
 
-1. **Read `_context/context.md` first.** It contains the project's design vocabulary. Use those exact class strings for shadcn primitives. Do not invent new patterns.
+1. **Read `_context/context.md` first, and note its `Stack:` line.** It contains the project's real design vocabulary for whatever stack was detected. Use those exact class/prop patterns. Do not invent new patterns, and do not substitute a different stack's conventions (e.g. don't write Tailwind utility classes into a `quasar-vue`-profile draft).
 
-2. **Self-contained file.** Every draft is a single `.html` file with NO external dependencies except:
-   - `https://cdn.tailwindcss.com` — Tailwind JIT
-   - Google Fonts CDN for Geist (or whatever the project uses)
-   - Inline `<style>` blocks for tokens and animations
-   - Inline `<script>` block for `tailwind.config = {...}`
+2. **Self-contained file.** Every draft is a single `.html` file with NO external dependencies except whatever `_context/head.html` already specifies for the detected profile (a framework CDN, fonts, icons) plus inline `<style>`/`<script>` blocks. Don't add a new CDN dependency that isn't already in `head.html` — if a draft genuinely needs something new (e.g. a chart library), that's a signal to re-run `init` or ask the user, not to silently bolt it on.
 
-3. **Dark mode is class-based.** Put `class="dark"` on `<html>` (or `<body>`) by default — the project uses dark as primary.
+3. **Respect the profile's dark-mode/body-class defaults** as documented in `context.md` (from `INIT.md`'s per-profile HTML_ATTRS/BODY_CLASS) — don't assume dark-mode-primary if the detected stack doesn't use that convention.
 
-4. **Body defaults.** `<body class="dark bg-background text-foreground font-geist">` (or font-sans if no Geist).
+4. **Use the profile's real spacing/sizing vocabulary, not px, and not a different framework's units.** Tailwind/shadcn: rem-based utilities (`gap-4`, `h-9`, `max-w-xs`). Quasar: Quasar's own scale (`q-pa-md`, `q-gutter-sm`, `row`/`column` flex helpers). Generic: whatever unit the sampled real components actually use.
 
-5. **Use rem and Tailwind utilities, not px.** No `style="width: 280px"`. Use `max-w-xs`, `w-20`, `h-9`, `grid-cols-12`, `gap-4`, `space-y-6`, etc.
+5. **No JavaScript framework runtime.** Plain HTML. Static content. Interactive states (hover, focus, active tab, open/checked) are shown by hardcoding the "on" state's classes/attributes directly in the markup — never by loading Vue/React/Quasar's JS runtime into a static mock.
 
-6. **No JavaScript framework.** Plain HTML. Static content. Interactive states (hover, focus, data-state=checked) can be shown by hardcoding the active state's classes if needed for the mock.
+6. **Icons:** use whatever `head.html` already wired up for the profile (Lucide for tailwind-shadcn, inline SVG for quasar-vue and generic) — don't introduce a different icon library mid-project.
 
-7. **Use Lucide icons via CDN** if needed: `<i data-lucide="plus"></i>` with the lucide auto-init script, OR inline SVG copies. Prefer inline SVG for self-containment.
+7. **Match the user's project conventions exactly**, per `context.md`'s Conventions section (e.g. shadcn `baseColor`/`style`, or Quasar's `:no-caps` convention, or whatever the generic profile found). Don't drift toward a "close enough" default.
 
-8. **Match the user's project conventions.** If components.json says `style: "default"` and `baseColor: "neutral"`, the visual baseline is shadcn neutral. Don't drift toward zinc or slate.
+8. **Always update the manifest** when writing a new draft or modifying an existing one.
 
-9. **Always update the manifest** when writing a new draft or modifying an existing one.
+9. **Never contradict `_context/`.** If a token/value is documented there, use it exactly — don't approximate ("looks about blue-600") when the real value is known.
 
-10. **Never read from `.claude/designs/_context/` and then write generated content that contradicts it.** If the project's `--primary` is HSL `0 0% 98%` (near-white in dark mode), don't generate a draft assuming `--primary` is blue.
+10. **When the user flags real usability problems in a draft — redundant labels, cramped spacing, unclear hierarchy — treat that as a normal `iterate --mode replace` prompt, not a reason to second-guess the stack/tokens.** Content and layout problems are fixed by editing the draft's body; they have nothing to do with which CDN/profile is loaded.
+
+## Layout lint
+
+After every `draft` and `iterate`, run `node ~/.claude/skills/vellum/lint.mjs <file>` from the repo root. It opens the draft in Chromium through the repo's own `playwright` package at 1440px and 390px (`--width 1440,390` to change), waits for fonts and the Tailwind browser CDN, and measures the rendered DOM. Exit 0 = no FAIL, 1 = one or more FAIL, 2 = the check could not run (no `playwright` in the repo's `node_modules`, no Chromium, or the page did not load). Fix every FAIL before you show the draft. Tell the user about each WARN. An exit 2 is not a pass: say that the lint did not run and why.
+
+Rules (the output prints each rule with its heuristic, the elements, and the measured px):
+
+- `h-scroll` (FAIL): the page scrolls horizontally.
+- `heading-stack` (FAIL): three or more heading-styled elements stack in one column with no content between them.
+- `gap-order` (FAIL): the gap between two sections is not larger than the largest gap between fields inside them.
+- `box-smash` (FAIL): two separate bordered boxes are less than 8px apart (touching boxes count as one joined group).
+- `helper-ratio` (WARN): more than one third of fields show helper text.
+- `column-align` (WARN): in a multi-column row, the first bordered box of each column does not start at the same top edge (more than 4px apart).
+- `page-error` / `load` (FAIL): the page threw an error or a resource did not load, so the measurement may not match what the user sees.
+
+The lint measures the default state only. Hidden tabs and panels are not checked; switch to them in the markup and run it again if they matter.
 
 ## Common errors
 
 - **"context.md not found"** — run `/vellum init` first, or the user is in the wrong directory.
 - **"manifest.json not found for project"** — run `/vellum create <name>` first.
-- **HTML draft has broken Tailwind classes** — re-read `context.md`. Do not invent classes.
-- **User says "the colors are wrong"** — re-run `/vellum init` to re-extract tokens; the project's globals.css may have changed since last init.
+- **Draft doesn't visually resemble the real app** — check `context.md`'s `Stack:` line matches the project's actual frontend framework. If `init` detected the wrong profile (rare — e.g. a repo migrating between two frameworks), re-run `init` and correct it, or ask the user which framework is the real UI layer.
+- **"the colors are wrong"** — re-run `/vellum init` to re-extract tokens; the project's stylesheet/theme file may have changed since last init. For `quasar-vue`, check whether a custom `*.variables.scss` was added since — stock defaults were likely used if none existed at init time.
+- **HTML draft has broken/invented classes** — re-read `context.md`. Do not invent classes, and do not carry over a different profile's class vocabulary from a prior project.
 
 ## Phase 2 — out of scope for MVP
 
 These verbs are NOT implemented in the MVP. If a user asks for them, explain they're future work:
-- `promote <draft-id>` — convert HTML draft to a real React component file using shadcn imports
+- `promote <draft-id>` — convert HTML draft to a real component file (React/Vue) using the project's actual component imports
 - `serve` — start a local HTTP server to preview drafts in a gallery
 - `flow <draft-id> --pages "..."` — multi-page flows (SuperDesign's `execute-flow-pages`)
 - Storybook export
+- Named profiles for Bootstrap, Vuetify, Material UI, Svelte, etc. — until then, these get the `generic` fallback, which still samples real tokens/components rather than assuming Tailwind. Add a named profile the same way `quasar-vue` was added, if one of these comes up often enough to be worth it.
 
 ## Why "vellum"?
 
-Vellum is the translucent drafting paper architects use to sketch over a base drawing without committing. This skill drafts over your real codebase — using its tokens, its components, its conventions — so the sketch is always anchored to reality.
+Vellum is the translucent drafting paper architects use to sketch over a base drawing without committing. This skill drafts over your real codebase — using its tokens, its components, its conventions, whatever framework they're written in — so the sketch is always anchored to reality.
