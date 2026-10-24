@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import {createRequire} from 'node:module';
-import {existsSync} from 'node:fs';
+import {existsSync, mkdirSync} from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 
@@ -13,12 +13,13 @@ const RULES = [
   ['column-align', 'WARN', 'in a flex-row or grid row with 2+ side-by-side columns, the top edges of the first bordered box (all four sides or ring, 24px+, not a button, link or tab) in each column differ by more than 4px']
 ];
 
-const USAGE = 'usage: node lint.mjs <draft.html> [--width 1440,390]';
+const USAGE = 'usage: node lint.mjs <draft.html> [--width 1440,390] [--shots <dir>]';
 
 function parseArgs(argv) {
   const args = argv.slice(2);
   let file;
   let widths = [1440, 390];
+  let shots;
   for(let i = 0; i < args.length; i++) {
     if(args[i] === '--width') {
       const raw = args[++i];
@@ -29,6 +30,12 @@ function parseArgs(argv) {
       if(widths.some(w => !Number.isInteger(w) || w < 200)) {
         throw new Error(`--width must be integers >= 200, got "${raw}"`);
       }
+    } else if(args[i] === '--shots') {
+      shots = args[++i];
+      if(!shots) {
+        throw new Error(`--shots needs a directory. ${USAGE}`);
+      }
+      shots = path.resolve(shots);
     } else if(!file) {
       file = args[i];
     } else {
@@ -42,7 +49,7 @@ function parseArgs(argv) {
   if(!existsSync(abs)) {
     throw new Error(`draft not found: ${abs}`);
   }
-  return {file: abs, widths};
+  return {file: abs, widths, shots};
 }
 
 function loadPlaywright() {
@@ -374,7 +381,10 @@ function measure() {
 }
 
 async function main() {
-  const {file, widths} = parseArgs(process.argv);
+  const {file, widths, shots} = parseArgs(process.argv);
+  if(shots) {
+    mkdirSync(shots, {recursive: true});
+  }
   const {chromium} = loadPlaywright();
   const browser = await chromium.launch().catch(e => {
     console.error(`lint: chromium failed to launch. ` +
@@ -396,6 +406,10 @@ async function main() {
       for(const f of await page.evaluate(measure)) {
         rows.push({width, ...f});
       }
+      if(shots) {
+        await page.screenshot({fullPage: true, path: path.join(shots,
+          `${path.basename(file, '.html')}-${width}.png`)});
+      }
       await page.close();
     }
   } finally {
@@ -403,6 +417,10 @@ async function main() {
   }
 
   console.log(`vellum lint: ${file}`);
+  if(shots) {
+    console.log(`shots: ${widths.map(w => path.join(shots,
+      `${path.basename(file, '.html')}-${w}.png`)).join(', ')}`);
+  }
   console.log('rules:');
   for(const [name, level, text] of RULES) {
     console.log(`  ${name} (${level}): ${text}`);
