@@ -10,7 +10,7 @@
       "name": "vellum",
       "source": "./",
       "description": "Local design-iteration skill — self-hosted alternative to SuperDesign. Iterates static HTML/CSS mockups using your real design tokens and component vocabulary, with a rendered layout lint.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "keywords": ["design", "ui", "mockup", "shadcn", "tailwind"]
     }
   ]

@@ -5,6 +5,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const RULES = [
+  ['empty-page', 'FAIL', 'no visible text, form control, image, svg, canvas or video in the body (the body is often still inside the template comment marker)'],
   ['h-scroll', 'FAIL', 'documentElement.scrollWidth > innerWidth; lists the widest elements that pass the right edge'],
   ['heading-stack', 'FAIL', '3+ heading-styled elements in a row (h1-h6, legend, card-title, field-legend, or a >=600-weight text element alone on its line with no controls), each below the last and overlapping it horizontally, with no content box between them'],
   ['gap-order', 'FAIL', 'a vertical gap between two stacked sections (section, fieldset, field-set, or a box whose first child is or holds a heading) must be larger than the largest gap between stacked fields ([data-slot=field] or label+control groups) inside those two sections'],
@@ -131,6 +132,13 @@ function measure() {
   const all = [...document.body.querySelectorAll('*')]
     .filter(el => !['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT'].includes(el.tagName))
     .filter(visible);
+
+  const MEDIA = ['IMG', 'svg', 'CANVAS', 'VIDEO'];
+  if(!ownText(document.body) && !all.some(el => ownText(el) ||
+    el.matches(CONTROL_SEL) || MEDIA.includes(el.tagName))) {
+    add('empty-page', 'FAIL', '-',
+      `${all.length} visible elements, none with content`);
+  }
 
   const vw = window.innerWidth;
   const sw = document.documentElement.scrollWidth;

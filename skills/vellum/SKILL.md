@@ -220,6 +220,7 @@ After every `draft` and `iterate`, run `node ~/.claude/skills/vellum/lint.mjs <f
 
 Rules (the output prints each rule with its heuristic, the elements, and the measured px):
 
+- `empty-page` (FAIL): the page shows no text, control or media. Usually the body is still inside the template's `<!-- {{BODY}} -->` marker.
 - `h-scroll` (FAIL): the page scrolls horizontally.
 - `heading-stack` (FAIL): three or more heading-styled elements stack in one column with no content between them.
 - `gap-order` (FAIL): the gap between two sections is not larger than the largest gap between fields inside them.
